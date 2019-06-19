@@ -10,10 +10,10 @@ from google.protobuf import text_format
 
 
 def _conv_block(net, bottom, name, num_output, use_relu=True, kernel_size=3, stride=1, pad=1, bn_prefix='', bn_postfix='/bn', 
-    scale_prefix='', scale_postfix='/scale'):
+    scale_prefix='', scale_postfix='/scale',groups=1):
 
     conv = L.Convolution(bottom, kernel_size=kernel_size, stride=stride, 
-                    num_output=num_output,  pad=pad, bias_term=False, weight_filler=dict(type='xavier'), bias_filler=dict(type='constant'))
+                    num_output=num_output,  pad=pad, bias_term=False, weight_filler=dict(type='xavier'), bias_filler=dict(type='constant'), groups=groups)
     net[name] = conv
 
     bn_name = '{}{}{}'.format(bn_prefix, name, bn_postfix)
