@@ -13,7 +13,7 @@ def _conv_block(net, bottom, name, num_output, use_relu=True, kernel_size=3, str
     scale_prefix='', scale_postfix='/scale',groups=1):
 
     conv = L.Convolution(bottom, kernel_size=kernel_size, stride=stride, 
-                    num_output=num_output,  pad=pad, bias_term=False, weight_filler=dict(type='xavier'), bias_filler=dict(type='constant'), groups=groups)
+                    num_output=num_output,  pad=pad, bias_term=False, weight_filler=dict(type='xavier'), bias_filler=dict(type='constant'), group=groups)
     net[name] = conv
 
     bn_name = '{}{}{}'.format(bn_prefix, name, bn_postfix)
