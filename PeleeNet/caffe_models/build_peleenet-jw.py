@@ -61,7 +61,7 @@ def _dense_block(net, from_layer, num_layers, growth_rate, name, num_input_featu
     cb1 = _conv_block(net, cb1, '{}/branch1b'.format(base_name), kernel_size=3, stride=1, groups=inter_channel,
                                num_output=inter_channel, pad=1)
     cb1 = _conv_block(net, cb1, '{}/branch1c'.format(base_name), kernel_size=1, stride=1, 
-                               num_output=growth_rate, pad=1)
+                               num_output=growth_rate, pad=0)
 
     cb2 = _conv_block(net, x, '{}/branch2a'.format(base_name), kernel_size=1, stride=1, 
                                num_output=inter_channel, pad=0)
