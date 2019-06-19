@@ -20,12 +20,12 @@ class _DenseLayer(nn.Module):
             print('adjust inter_channel to ',inter_channel)
 
         self.branch1a = BasicConv2d(num_input_features, inter_channel, kernel_size=1)
-        self.branch1b = BasicConv2d(inter_channel, growth_rate, kernel_size=3, groups=inter_channel, padding=1)
+        self.branch1b = BasicConv2d(inter_channel, inter_channel, kernel_size=3, groups=inter_channel, padding=1)
         self.branch1c = BasicConv2d(inter_channel, growth_rate, kernel_size=1)
 
         self.branch2a = BasicConv2d(num_input_features, inter_channel, kernel_size=1)
-        self.branch2b = BasicConv2d(inter_channel, growth_rate, kernel_size=5, group=inter_channel, padding=2)
-        self.branch2c = BasicConv2d(growth_rate, growth_rate, kernel_size=3, padding=1)
+        self.branch2b = BasicConv2d(inter_channel, inter_channel, kernel_size=5, groups=inter_channel, padding=2)
+        self.branch2c = BasicConv2d(inter_channel, growth_rate, kernel_size=3, padding=1)
 
     def forward(self, x):
         branch1 = self.branch1a(x)

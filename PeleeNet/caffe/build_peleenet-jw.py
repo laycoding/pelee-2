@@ -49,18 +49,22 @@ def _dense_block(net, from_layer, num_layers, growth_rate, name,bottleneck_width
   for i in range(num_layers):
     base_name = '{}_{}'.format(name,i+1)
     inter_channel = int(growth_rate * bottleneck_width / 4) * 4
+    
+    # if inter_channel > num_input_features / 2:
+    #     inter_channel = int(num_input_features / 8) * 4
+    #     print('adjust inter_channel to ',inter_channel)
 
     cb1 = _conv_block(net, x, '{}/branch1a'.format(base_name), kernel_size=1, stride=1, 
                                num_output=inter_channel, pad=0)
     cb1 = _conv_block(net, cb1, '{}/branch1b'.format(base_name), kernel_size=3, stride=1, groups=inter_channel,
-                               num_output=growth_rate, pad=1)
+                               num_output=inter_channel, pad=1)
     cb1 = _conv_block(net, cb1, '{}/branch1c'.format(base_name), kernel_size=3, stride=1, 
                                num_output=growth_rate, pad=1)
 
     cb2 = _conv_block(net, x, '{}/branch2a'.format(base_name), kernel_size=1, stride=1, 
                                num_output=inter_channel, pad=0)
     cb2 = _conv_block(net, cb2, '{}/branch2b'.format(base_name), kernel_size=5, stride=1, groups=inter_channel,
-                               num_output=growth_rate, pad=2)
+                               num_output=inter_channel, pad=2)
     cb2 = _conv_block(net, cb2, '{}/branch2c'.format(base_name), kernel_size=3, stride=1, 
                                num_output=growth_rate, pad=1)
 
@@ -141,8 +145,6 @@ def PeleeNetBody(net, from_layer='data', growth_rate=32, block_config = [3,4,8,6
         with_pooling=True
 
       from_layer = _transition_block(net, from_layer, total_filter,name='stage{}_tb'.format(idx+1), with_pooling=with_pooling)
-
-
 
     return net
 

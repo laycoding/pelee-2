@@ -8,9 +8,10 @@ import numpy as np
 
 
 def _convert_dense_layer(torch_name, caffe_name):
-    print 'converting ', caffe_name
+    # print 'converting ', caffe_name
     _convert_basic_block('{}.branch1a'.format(torch_name), '{}/branch1a'.format(caffe_name))
     _convert_basic_block('{}.branch1b'.format(torch_name), '{}/branch1b'.format(caffe_name))
+    _convert_basic_block('{}.branch1c'.format(torch_name), '{}/branch1c'.format(caffe_name))
 
     _convert_basic_block('{}.branch2a'.format(torch_name), '{}/branch2a'.format(caffe_name))
     _convert_basic_block('{}.branch2b'.format(torch_name), '{}/branch2b'.format(caffe_name))
@@ -78,11 +79,11 @@ def save_scale2caffe(weights, biases, scale_param):
 torch_base_name='module.features'
 
 
-checkpoint = torch.load('weights/peleenet_acc7208.pth.tar')
+checkpoint = torch.load('weights/jw_j4.pth.tar')
 torch_params = checkpoint['state_dict']
 
-caffemodel='caffe/peleenet.caffemodel'
-protofile='caffe/peleenet.prototxt'
+caffemodel='caffe_models/peleenet-jw.caffemodel'
+protofile='caffe_models/peleenet-jw.prototxt'
 net = caffe.Net(protofile, caffe.TEST)
 params = net.params
 
@@ -105,7 +106,7 @@ for i, caffe_conv in enumerate(caffe_stem_layers):
         _convert_basic_block(torch_conv, caffe_conv)
 
 # convert dense layers
-block_config=(3, 4, 4, 6)
+block_config=(3, 5, 8, 4)
 for i, num_layers in enumerate(block_config):
     for k in range(num_layers):
         torch_name = '{}.denseblock{}.denselayer{}'.format(torch_base_name, i + 1, k + 1)
