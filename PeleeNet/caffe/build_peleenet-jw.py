@@ -41,18 +41,20 @@ def _conv_block(net, bottom, name, num_output, use_relu=True, kernel_size=3, str
 
     return out_layer
 
-def _dense_block(net, from_layer, num_layers, growth_rate, name,bottleneck_width=4):
+def _dense_block(net, from_layer, num_layers, growth_rate, name, num_input_features=1, bottleneck_width=4):
 
   x = from_layer
   growth_rate = int(growth_rate/2)
 
   for i in range(num_layers):
+    num_input_features += i * growth_rate
     base_name = '{}_{}'.format(name,i+1)
     inter_channel = int(growth_rate * bottleneck_width / 4) * 4
-    
-    # if inter_channel > num_input_features / 2:
-    #     inter_channel = int(num_input_features / 8) * 4
-    #     print('adjust inter_channel to ',inter_channel)
+
+    if inter_channel > num_input_features / 2:
+        inter_channel = int(num_input_features / 8) * 4
+        print('adjust inter_channel to ',inter_channel)
+        # print(from_layer)
 
     cb1 = _conv_block(net, x, '{}/branch1a'.format(base_name), kernel_size=1, stride=1, 
                                num_output=inter_channel, pad=0)
@@ -65,8 +67,8 @@ def _dense_block(net, from_layer, num_layers, growth_rate, name,bottleneck_width
                                num_output=inter_channel, pad=0)
     cb2 = _conv_block(net, cb2, '{}/branch2b'.format(base_name), kernel_size=5, stride=1, groups=inter_channel,
                                num_output=inter_channel, pad=2)
-    cb2 = _conv_block(net, cb2, '{}/branch2c'.format(base_name), kernel_size=3, stride=1, 
-                               num_output=growth_rate, pad=1)
+    cb2 = _conv_block(net, cb2, '{}/branch2c'.format(base_name), kernel_size=1, stride=1, 
+                               num_output=growth_rate, pad=0)
 
     x = L.Concat(x, cb1, cb2, axis=1)
     concate_name = '{}/concat'.format(base_name)
@@ -136,7 +138,7 @@ def PeleeNetBody(net, from_layer='data', growth_rate=32, block_config = [3,4,8,6
         growth_rates = [growth_rate] * 4
 
     for idx, num_layers in enumerate(block_config):
-      from_layer = _dense_block(net, from_layer, num_layers, growth_rates[idx], name='stage{}'.format(idx+1), bottleneck_width=bottleneck_widths[idx])
+      from_layer = _dense_block(net, from_layer, num_layers, growth_rates[idx], name='stage{}'.format(idx+1), num_input_features=total_filter, bottleneck_width=bottleneck_widths[idx])
       total_filter += growth_rates[idx] * num_layers
       
       if idx == len(block_config) - 1:
